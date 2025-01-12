@@ -1,19 +1,18 @@
 #include "get_next_line.h"
-#include <stdio.h>
 
-char *find_line(char *s, int c)
+char *find_line(char *s, char c)
 {
     char *str;
     size_t i;
 
     i = 0;
-    while (s[i] && s[i] != (char)c)
+    while (s[i] && s[i] != c)
         i++;
     if (s[i] == (char)c)
         i++;
     str = (char *)malloc((i + 1) * sizeof(char));
     if (!str)
-        return (ft_strdup(s));
+        return (NULL);
     ft_strlcpy(str, s, i + 1);
     return (str);
 }
@@ -36,13 +35,17 @@ char *read_and_update_leftover(int fd, char **leftover)
 {
     char *buffer;
     ssize_t bytes_read;
+	size_t	buffer_size;
 
-    buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer_size = BUFFER_SIZE;
+    buffer = (char *)malloc((buffer_size + 1) * sizeof(char));
     if (!buffer)
         return (NULL);
     while (1)
     {
-        bytes_read = read(fd, buffer, BUFFER_SIZE);
+        bytes_read = read(fd, buffer, buffer_size);
         if (bytes_read == -1)
             return (free(buffer), NULL);
         buffer[bytes_read] = '\0';
@@ -62,7 +65,7 @@ char	*get_next_line(int fd)
     char *line;
     char *temp;
 
-    if (fd < 0 || BUFFER_SIZE <= 0)
+    if (fd < 0)
         return (NULL);
     if (!read_and_update_leftover(fd, &leftover))
         return (free(leftover), NULL);
@@ -80,6 +83,7 @@ char	*get_next_line(int fd)
 }
 
 #include <fcntl.h>
+#include <stdio.h>
 
 int main(void)
 {
