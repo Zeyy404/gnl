@@ -81,7 +81,7 @@ char	*get_next_line(int fd)
     leftover = NULL;
     return (line);
 }
-
+/*
 #include <fcntl.h>
 #include <stdio.h>
 
@@ -105,3 +105,4 @@ int main(void)
     close(fd);
     return (0);
 }
+*/
