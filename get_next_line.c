@@ -22,6 +22,8 @@ char *combine_leftover_and_buffer(char *leftover, char *buffer)
 {
     char *temp;
 
+	if (!leftover && !buffer)
+        return (NULL);
     if (!leftover)
         return (ft_strdup(buffer));
     temp = leftover;
@@ -63,7 +65,7 @@ char	*get_next_line(int fd)
     if (fd < 0 || BUFFER_SIZE <= 0)
         return (NULL);
     if (!read_and_update_leftover(fd, &leftover))
-        return (NULL);
+        return (free(leftover), NULL);
     line = find_line(leftover, '\n');
     if (line)
     {
