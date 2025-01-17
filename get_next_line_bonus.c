@@ -1,4 +1,4 @@
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char *find_line(char *s)
 {
@@ -48,7 +48,7 @@ char *read_and_update_leftover(int fd, char **leftover)
             return (free(buffer), NULL);
         buffer[bytes_read] = '\0';
         *leftover = combine_leftover_and_buffer(*leftover, buffer);
-        if (bytes_read == 0 || ft_strchr(buffer, '\n'))
+        if (!*leftover || bytes_read == 0 || ft_strchr(buffer, '\n'))
             break;
     }
     free(buffer);
@@ -59,24 +59,24 @@ char *read_and_update_leftover(int fd, char **leftover)
 
 char	*get_next_line(int fd)
 {
-    static char *leftover;
+    static char *leftover[MAX_FD];
     char *line;
     char *temp;
 
-    if (fd < 0)
+    if (fd < 0 || fd >= MAX_FD)
         return (NULL);
-    if (!read_and_update_leftover(fd, &leftover))
-        return (free(leftover), NULL);
-    line = find_line(leftover);
+    if (!read_and_update_leftover(fd, &leftover[fd]))
+        return (free(leftover[fd]), NULL);
+    line = find_line(leftover[fd]);
     if (line)
     {
-        temp = leftover;
-        leftover = ft_strdup(leftover + ft_strlen(line));
+        temp = leftover[fd];
+        leftover[fd] = ft_strdup(leftover[fd] + ft_strlen(line));
         free(temp);
         return (line);
     }
-    line = leftover;
-    leftover = NULL;
+    line = leftover[fd];
+    leftover[fd] = NULL;
     return (line);
 }
 
@@ -86,17 +86,34 @@ char	*get_next_line(int fd)
 
 int main(void)
 {
-    int fd = open("text.txt", O_RDONLY);
+    int fd1 = open("text1.txt", O_RDONLY);
+    int fd2 = open("text2.txt", O_RDONLY);
     char *line;
 
-    if (fd < 0)
-        return (1);
-    while ((line = get_next_line(fd)) != NULL)
+    if (fd1 < 0 || fd2 < 0)
     {
-        printf("%s", line);
-        free(line);
+        perror("Error opening files");
+        return (1);
     }
-    close(fd);
+
+    printf("Reading from fd1:\n");
+    line = get_next_line(fd1);
+    printf("%s", line);
+    free(line);
+
+    printf("\nReading from fd2:\n");
+    line = get_next_line(fd2);
+    printf("%s", line);
+    free(line);
+
+    printf("\nReading from fd1 again:\n");
+    line = get_next_line(fd1);
+    printf("%s", line);
+    free(line);
+
+    close(fd1);
+    close(fd2);
+
     return (0);
 }
 */
