@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zsalih <zsalih@student.42abudhabi.ae>      +#+  +:+       +#+        */
+/*   By: zsalih < zsalih@student.42abudhabi.ae>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/18 13:20:09 by zsalih            #+#    #+#             */
-/*   Updated: 2025/01/18 18:20:16 by zsalih           ###   ########.fr       */
+/*   Updated: 2025/01/21 15:33:07 by zsalih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,11 @@ char	*get_next_line(int fd)
 	if (fd < 0 || fd >= MAX_FD)
 		return (NULL);
 	if (!read_and_update_leftover(fd, &leftover[fd]))
-		return (free(leftover[fd]), NULL);
+	{
+		free(leftover[fd]);
+		leftover[fd] = NULL;
+		return (NULL);
+	}
 	line = find_line(leftover[fd]);
 	if (line)
 	{
